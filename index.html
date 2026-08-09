@@ -3,142 +3,318 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ASYLUM ENIGMA</title>
+  <title>UN-SRO Academic Paper Viewer & Translator</title>
   <style>
     :root {
-      --bg-color: #0a0a0c;
-      --panel-bg: #121318;
-      --accent-color: #00ff66;
-      --text-color: #e0e0e0;
-      --border-color: #2a2d3d;
+      --bg-color: #f8f9fa; /* 通常時：明るい白 */
+      --panel-bg: #ffffff;
+      --accent-color: #2b3a4a; /* デフォルトカラー */
+      --text-color: #1a1a1a;
+      --border-color: #cccccc;
+      --input-bg: #f1f3f5;
+      --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    /* 識別コード入力時の漆黒モード（ダークモード） */
+    body.secret-mode {
+      --bg-color: #050508; /* 極小の青みを含む深遠な黒 */
+      --panel-bg: #0d0f14;
+      --text-color: #e0e6ed;
+      --border-color: var(--accent-color);
+      --input-bg: #000000;
+      --box-shadow: 0 0 30px var(--accent-glow, rgba(0,0,0,0.5));
     }
 
     body {
       background-color: var(--bg-color);
       color: var(--text-color);
-      font-family: 'Courier New', Consolas, monospace;
+      font-family: 'Hiragino Sans', 'Yu Gothic', 'Courier New', sans-serif;
       margin: 0;
-      padding: 20px;
+      padding: 30px 20px;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      box-sizing: border-box;
+      transition: background-color 0.6s ease, color 0.6s ease;
     }
 
     .container {
       width: 100%;
-      max-width: 700px;
+      max-width: 750px;
       background: var(--panel-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 30px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+      border: 2px solid var(--accent-color);
+      border-radius: 6px;
+      padding: 35px;
+      box-shadow: var(--box-shadow);
+      transition: all 0.6s ease;
+    }
+
+    .org-header {
+      font-size: 0.75em;
+      letter-spacing: 2px;
+      color: #666666;
+      text-align: center;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      transition: color 0.5s ease;
+    }
+
+    body.secret-mode .org-header {
+      color: #aaaaaa;
     }
 
     h1 {
       text-align: center;
       color: var(--accent-color);
-      letter-spacing: 4px;
-      margin-bottom: 5px;
-      text-shadow: 0 0 8px rgba(0, 255, 102, 0.4);
+      letter-spacing: 2px;
+      margin: 0 0 5px 0;
+      font-size: 1.6em;
+      transition: color 0.5s ease;
     }
 
-    .subtitle {
+    .branch-badge {
+      display: block;
       text-align: center;
       font-size: 0.8em;
-      color: #888;
-      margin-bottom: 25px;
+      letter-spacing: 1px;
+      margin-bottom: 30px;
+      color: var(--accent-color);
+      font-weight: bold;
+      transition: color 0.5s ease;
     }
 
     .section {
-      margin-bottom: 20px;
+      margin-bottom: 22px;
     }
 
     label {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       font-weight: bold;
-      font-size: 0.9em;
+      font-size: 0.85em;
       color: var(--accent-color);
+      transition: color 0.5s ease;
     }
 
     textarea, input[type="text"] {
       width: 100%;
-      background: #000;
+      background: var(--input-bg);
       border: 1px solid var(--border-color);
-      color: #fff;
+      color: var(--text-color);
       padding: 12px;
       border-radius: 4px;
       font-family: inherit;
+      font-size: 0.95em;
       box-sizing: border-box;
+      transition: border-color 0.3s, background-color 0.5s, color 0.5s;
+    }
+
+    textarea:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+
+    body:not(.secret-mode) textarea:focus, body:not(.secret-mode) input[type="text"]:focus {
+      background-color: #ffffff;
     }
 
     textarea {
-      height: 100px;
+      height: 110px;
       resize: vertical;
     }
 
     .btn-group {
       display: flex;
-      gap: 10px;
+      gap: 12px;
       margin-top: 15px;
     }
 
     button {
       flex: 1;
       padding: 12px;
-      background: #1a1c23;
+      background: var(--accent-color);
       border: 1px solid var(--accent-color);
-      color: var(--accent-color);
+      color: #ffffff;
       font-weight: bold;
       cursor: pointer;
       border-radius: 4px;
-      transition: all 0.2s;
+      transition: all 0.3s ease;
     }
 
     button:hover {
+      opacity: 0.9;
+    }
+
+    button.secondary {
+      background: transparent;
+      color: var(--accent-color);
+      border: 1px solid var(--accent-color);
+    }
+
+    button.secondary:hover {
       background: var(--accent-color);
-      color: #000;
-      box-shadow: 0 0 10px rgba(0, 255, 102, 0.5);
+      color: #ffffff;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>ASYLUM ENIGMA</h1>
-  <div class="subtitle">238-CHAR & 2965-KANJI CIPHER SYSTEM</div>
+  <div id="orgHeader" class="org-header">United Nations Research Repository</div>
+  <h1 id="mainTitle">ACADEMIC REPORT DECODER</h1>
+  <div id="branchBadge" class="branch-badge">[ SYSTEM STATUS: READY / DOCUMENT PARSER ]</div>
 
   <div class="section">
-    <label for="key">■ ROTER KEY (鍵)</label>
-    <input type="text" id="key" placeholder="例: 狂気">
+    <label for="key">■ REPORT ID (レポート番号)</label>
+    <input type="text" id="key" placeholder="レポート番号またはキーを入力..." oninput="parseProtocolCode()">
   </div>
 
   <div class="section">
-    <label for="inputText">■ INPUT (変換前)</label>
-    <textarea id="inputText" placeholder="ここに文字を入力..."></textarea>
+    <label for="inputText">■ INPUT DATA (変換対象テキスト)</label>
+    <textarea id="inputText" placeholder="研究論文または暗号化されたレポート本文を入力..."></textarea>
   </div>
 
   <div class="btn-group">
-    <button onclick="processCipher(true)">ENCRYPT (暗号化)</button>
+    <button class="secondary" onclick="processCipher(true)">ENCRYPT (暗号化)</button>
     <button onclick="processCipher(false)">DECRYPT (復号)</button>
   </div>
 
   <div class="section" style="margin-top: 25px;">
-    <label for="outputText">■ OUTPUT (変換後)</label>
-    <textarea id="outputText" readonly placeholder="結果がここに表示されます"></textarea>
+    <label for="outputText">■ OUTPUT DATA (解析結果)</label>
+    <textarea id="outputText" readonly placeholder="ここに解析・復号されたデータが出力されます"></textarea>
   </div>
 </div>
 
- <script>
-  // 基本文字セット（238文字の例：半角英数・記号・基本ひらがな等）
-  const BASE_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン";
+<script>
+  // 64文字の漢字テーブル（Base64変換用）
+  const KANJI_SET = "亜哀挨愛曖悪握渥旭扱宛嵐安案暗以衣位囲医依委威為畏胃尉異移維緯胃意違維慰遺緯域益駅悦越謁易壱逸稲茨芋妹犬烏姓陰隠韻右宇烏羽迂雨卯鵜窺丑碓渦嘘唄蔚鰻姥厩浦瓜閏噂云運雲荏餌";
+  const KANJI_TABLE = Array.from(new Set(KANJI_SET.split(''))).slice(0, 64);
+  const BASE64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-  // 変換用漢字（重複なし2,965文字から抽出したサンプル変換テーブル）
-  // ※ここではテスト用に動作する文字群を定義しています
-  const KANJI_TABLE = Array.from({length: 2965}, (_, i) => String.fromCharCode(0x4E00 + (i * 7) % 5000));
+  // 各支部のカラー・表示タイトル・グローエフェクト定義
+  const BRANCH_CONFIG = {
+    'NA': { 
+      color: '#00ff66', 
+      glow: 'rgba(0, 255, 102, 0.3)',
+      org: 'UN-SRO NORTH AMERICA DIVISION', 
+      title: 'MIND-TRANSFER RESEARCH PORTAL', 
+      name: 'NORTH AMERICA', 
+      field: 'AI / MIND-TRANSFER' 
+    },
+    'EU': { 
+      color: '#bb55ff', 
+      glow: 'rgba(187, 85, 255, 0.3)',
+      org: 'UN-SRO EUROPEAN DIVISION', 
+      title: 'GENETIC EVOLUTION TERMINAL', 
+      name: 'EUROPE', 
+      field: 'GENE-MOD / BIO-EVOLUTION' 
+    },
+    'ASIA': { 
+      color: '#00d9ff', 
+      glow: 'rgba(0, 217, 255, 0.3)',
+      org: 'UN-SRO ASIA DIVISION', 
+      title: 'DIVINITY & SPACE-WARP LABORATORY', 
+      name: 'ASIA', 
+      field: 'DIVINITY / SPACE-WARP' 
+    },
+    'RU': { 
+      color: '#ff3344', 
+      glow: 'rgba(255, 51, 68, 0.3)',
+      org: 'UN-SRO RUSSIAN FEDERATION BRANCH', 
+      title: 'HEAVY-GRAVITY & PERMAFROST ARCHIVE', 
+      name: 'RUSSIA', 
+      field: 'HEAVY-GRAVITY / PERMAFROST' 
+    },
+    'AR': { 
+      color: '#00f0ff', 
+      glow: 'rgba(0, 240, 255, 0.3)',
+      org: 'UN-SRO ARCTIC ABYSS STATION', 
+      title: 'SUB-ICE HIGH-PRESSURE SYSTEM', 
+      name: 'ARCTIC ABYSS', 
+      field: 'SUB-ICE DEEP-SEA / HIGH-PRESSURE' 
+    },
+    'OC': { 
+      color: '#00ffcc', 
+      glow: 'rgba(0, 255, 204, 0.3)',
+      org: 'UN-SRO OCEANIA DIVISION', 
+      title: 'ANCIENT OCEANIC DATA DECODER', 
+      name: 'OCEANIA', 
+      field: 'DEEP-SEA / ANCIENT LIFE' 
+    },
+    'AF': { 
+      color: '#ffaa00', 
+      glow: 'rgba(255, 170, 0, 0.3)',
+      org: 'UN-SRO AFRICA DIVISION', 
+      title: 'NANOTECH & MATERIAL CONVERTER', 
+      name: 'AFRICA', 
+      field: 'NANOTECH / MATERIAL TRANS' 
+    },
+    'SA': { 
+      color: '#ff00ee', 
+      glow: 'rgba(255, 0, 238, 0.3)',
+      org: 'UN-SRO SOUTH AMERICA DIVISION', 
+      title: 'TELEPATHIC MENTAL NETWORK', 
+      name: 'SOUTH AMERICA', 
+      field: 'TELEPATHY / MENTAL NET' 
+    },
+    'AN': { 
+      color: '#3399ff', 
+      glow: 'rgba(51, 153, 255, 0.3)',
+      org: 'UN-SRO ANTARCTICA SECTOR', 
+      title: 'CRYO-PHYSICS CONTAINMENT SYSTEM', 
+      name: 'ANTARCTICA', 
+      field: 'CRYO-PHYSICS / SECTOR-LOCK' 
+    }
+  };
 
-  // 簡易ハッシュ関数（鍵から初期位置を計算）
+  // UNSRO-支部コードが打ち込まれた際の判別処理
+  function parseProtocolCode() {
+    const keyText = document.getElementById('key').value.trim().toUpperCase();
+    const root = document.documentElement;
+    const orgHeader = document.getElementById('orgHeader');
+    const mainTitle = document.getElementById('mainTitle');
+    const badge = document.getElementById('branchBadge');
+
+    // 正規表現で "UNSRO-支部コード-番号" を判定
+    const match = keyText.match(/^UNSRO-([A-Z]+)-?(\d*)$/);
+
+    if (match) {
+      const branchCode = match[1];
+      const reportNum = match[2] ? ` / REPORT #${match[2]}` : '';
+
+      if (BRANCH_CONFIG[branchCode]) {
+        const config = BRANCH_CONFIG[branchCode];
+        
+        // 1. 全体背景を真っ黒（ダークモード）へ切り替え
+        document.body.classList.add('secret-mode');
+        
+        // 2. 支部カラーとテキストを変更
+        root.style.setProperty('--accent-color', config.color);
+        root.style.setProperty('--accent-glow', config.glow);
+        orgHeader.innerText = config.org;
+        mainTitle.innerText = config.title;
+        badge.innerText = `[ BRANCH: ${config.name} / ${config.field}${reportNum} ]`;
+        return;
+      }
+    }
+
+    // コードを消した・一致しない場合は、通常状態（白背景の疑似画面）に戻す
+    document.body.classList.remove('secret-mode');
+    root.style.setProperty('--accent-color', '#2b3a4a');
+    orgHeader.innerText = 'United Nations Research Repository';
+    mainTitle.innerText = 'ACADEMIC REPORT DECODER';
+    badge.innerText = '[ SYSTEM STATUS: READY / DOCUMENT PARSER ]';
+  }
+
+  function utf8_to_b64(str) {
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (m, p1) => String.fromCharCode('0x' + p1)));
+  }
+
+  function b64_to_utf8(str) {
+    return decodeURIComponent(Array.prototype.map.call(atob(str), c => '%' + ('0' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+  }
+
   function getKeyOffset(key) {
     let hash = 0;
     for (let i = 0; i < key.length; i++) {
@@ -159,40 +335,51 @@
     }
 
     let result = "";
-    let rotorPosition = getKeyOffset(key); // 鍵によってローターの初期位置が決まる
+    let rotor = getKeyOffset(key);
 
-    for (let i = 0; i < input.length; i++) {
-      const char = input[i];
-      
+    try {
       if (isEncrypt) {
-        // --- 暗号化処理 ---
-        const charIndex = BASE_CHARS.indexOf(char);
-        if (charIndex !== -1) {
-          // 238文字の中に含まれる場合、ローター位置を加算して2,965文字の漢字へマッピング
-          const targetIndex = (charIndex + rotorPosition) % KANJI_TABLE.length;
-          result += KANJI_TABLE[targetIndex];
-        } else {
-          // 基本文字に含まれない場合はそのまま出力
-          result += char;
+        const b64 = utf8_to_b64(input);
+        for (let i = 0; i < b64.length; i++) {
+          const char = b64[i];
+          if (char === '=') {
+            result += '＝';
+            continue;
+          }
+          const idx = BASE64_CHARS.indexOf(char);
+          if (idx !== -1) {
+            const cipherIdx = (idx + rotor) % 64;
+            result += KANJI_TABLE[cipherIdx];
+          } else {
+            result += char;
+          }
+          rotor = (rotor + 13) % 64;
         }
       } else {
-        // --- 復号処理 ---
-        const kanjiIndex = KANJI_TABLE.indexOf(char);
-        if (kanjiIndex !== -1) {
-          // 漢字から元の基本文字の位置を逆算
-          let originalIndex = (kanjiIndex - (rotorPosition % KANJI_TABLE.length)) % BASE_CHARS.length;
-          if (originalIndex < 0) originalIndex += BASE_CHARS.length;
-          result += BASE_CHARS[originalIndex] || '?';
-        } else {
-          result += char;
+        let b64Result = "";
+        for (let i = 0; i < input.length; i++) {
+          const char = input[i];
+          if (char === '＝') {
+            b64Result += '=';
+            continue;
+          }
+          const kIdx = KANJI_TABLE.indexOf(char);
+          if (kIdx !== -1) {
+            let origIdx = (kIdx - (rotor % 64)) % 64;
+            if (origIdx < 0) origIdx += 64;
+            b64Result += BASE64_CHARS[origIdx];
+          } else {
+            b64Result += char;
+          }
+          rotor = (rotor + 13) % 64;
         }
+        result = b64_to_utf8(b64Result);
       }
 
-      // エニグマの特徴：1文字処理するごとにローターが回転（位置がずれる）
-      rotorPosition = (rotorPosition + 13) % KANJI_TABLE.length;
+      output.value = result;
+    } catch (e) {
+      alert("解析に失敗しました。レポートIDまたは暗号データが一致しません。");
     }
-
-    output.value = result;
   }
 </script>
 
