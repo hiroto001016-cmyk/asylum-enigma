@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASYLUM ENIGMA</title>
+  <style>
+    :root {
+      --bg-color: #0a0a0c;
+      --panel-bg: #121318;
+      --accent-color: #00ff66;
+      --text-color: #e0e0e0;
+      --border-color: #2a2d3d;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Courier New', Consolas, monospace;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 700px;
+      background: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--accent-color);
+      letter-spacing: 4px;
+      margin-bottom: 5px;
+      text-shadow: 0 0 8px rgba(0, 255, 102, 0.4);
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 0.8em;
+      color: #888;
+      margin-bottom: 25px;
+    }
+
+    .section {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      font-size: 0.9em;
+      color: var(--accent-color);
+    }
+
+    textarea, input[type="text"] {
+      width: 100%;
+      background: #000;
+      border: 1px solid var(--border-color);
+      color: #fff;
+      padding: 12px;
+      border-radius: 4px;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      height: 100px;
+      resize: vertical;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px;
+      background: #1a1c23;
+      border: 1px solid var(--accent-color);
+      color: var(--accent-color);
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      background: var(--accent-color);
+      color: #000;
+      box-shadow: 0 0 10px rgba(0, 255, 102, 0.5);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>ASYLUM ENIGMA</h1>
+  <div class="subtitle">238-CHAR & 2965-KANJI CIPHER SYSTEM</div>
+
+  <div class="section">
+    <label for="key">■ ROTER KEY (鍵)</label>
+    <input type="text" id="key" placeholder="例: 狂気">
+  </div>
+
+  <div class="section">
+    <label for="inputText">■ INPUT (変換前)</label>
+    <textarea id="inputText" placeholder="ここに文字を入力..."></textarea>
+  </div>
+
+  <div class="btn-group">
+    <button onclick="processCipher(true)">ENCRYPT (暗号化)</button>
+    <button onclick="processCipher(false)">DECRYPT (復号)</button>
+  </div>
+
+  <div class="section" style="margin-top: 25px;">
+    <label for="outputText">■ OUTPUT (変換後)</label>
+    <textarea id="outputText" readonly placeholder="結果がここに表示されます"></textarea>
+  </div>
+</div>
+
+ <script>
+  // 基本文字セット（238文字の例：半角英数・記号・基本ひらがな等）
+  const BASE_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン";
+
+  // 変換用漢字（重複なし2,965文字から抽出したサンプル変換テーブル）
+  // ※ここではテスト用に動作する文字群を定義しています
+  const KANJI_TABLE = Array.from({length: 2965}, (_, i) => String.fromCharCode(0x4E00 + (i * 7) % 5000));
+
+  // 簡易ハッシュ関数（鍵から初期位置を計算）
+  function getKeyOffset(key) {
+    let hash = 0;
+    for (let i = 0; i < key.length; i++) {
+      hash = (hash << 5) - hash + key.charCodeAt(i);
+      hash |= 0;
+    }
+    return Math.abs(hash);
+  }
+
+  function processCipher(isEncrypt) {
+    const input = document.getElementById('inputText').value;
+    const key = document.getElementById('key').value || "ASYLUM";
+    const output = document.getElementById('outputText');
+    
+    if(!input) {
+      alert("テキストを入力してください！");
+      return;
+    }
+
+    let result = "";
+    let rotorPosition = getKeyOffset(key); // 鍵によってローターの初期位置が決まる
+
+    for (let i = 0; i < input.length; i++) {
+      const char = input[i];
+      
+      if (isEncrypt) {
+        // --- 暗号化処理 ---
+        const charIndex = BASE_CHARS.indexOf(char);
+        if (charIndex !== -1) {
+          // 238文字の中に含まれる場合、ローター位置を加算して2,965文字の漢字へマッピング
+          const targetIndex = (charIndex + rotorPosition) % KANJI_TABLE.length;
+          result += KANJI_TABLE[targetIndex];
+        } else {
+          // 基本文字に含まれない場合はそのまま出力
+          result += char;
+        }
+      } else {
+        // --- 復号処理 ---
+        const kanjiIndex = KANJI_TABLE.indexOf(char);
+        if (kanjiIndex !== -1) {
+          // 漢字から元の基本文字の位置を逆算
+          let originalIndex = (kanjiIndex - (rotorPosition % KANJI_TABLE.length)) % BASE_CHARS.length;
+          if (originalIndex < 0) originalIndex += BASE_CHARS.length;
+          result += BASE_CHARS[originalIndex] || '?';
+        } else {
+          result += char;
+        }
+      }
+
+      // エニグマの特徴：1文字処理するごとにローターが回転（位置がずれる）
+      rotorPosition = (rotorPosition + 13) % KANJI_TABLE.length;
+    }
+
+    output.value = result;
+  }
+</script>
+
+</body>
+</html>
