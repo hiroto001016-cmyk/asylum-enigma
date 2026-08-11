@@ -6,18 +6,17 @@
   <title>Global Academic Paper Repository</title>
   <style>
     :root {
-      --bg-color: #f8f9fa; /* 通常時：明るい白 */
+      --bg-color: #f8f9fa;
       --panel-bg: #ffffff;
-      --accent-color: #2b3a4a; /* デフォルトカラー */
+      --accent-color: #2b3a4a;
       --text-color: #1a1a1a;
       --border-color: #cccccc;
       --input-bg: #f1f3f5;
       --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     }
 
-    /* 識別コード入力時の漆黒モード（ダークモード） */
     body.secret-mode {
-      --bg-color: #050508; /* 極小の青みを含む深遠な黒 */
+      --bg-color: #050508;
       --panel-bg: #0d0f14;
       --text-color: #e0e6ed;
       --border-color: var(--accent-color);
@@ -187,88 +186,41 @@
 </div>
 
 <script>
-  // 64文字の漢字テーブル（Base64変換用）
   const KANJI_SET = "亜哀挨愛曖悪握渥旭扱宛嵐安案暗以衣位囲医依委威為畏胃尉異移維緯胃意違維慰遺緯域益駅悦越謁易壱逸稲茨芋妹犬烏姓陰隠韻右宇烏羽迂雨卯鵜窺丑碓渦嘘唄蔚鰻姥厩浦瓜閏噂云運雲荏餌";
   const KANJI_TABLE = Array.from(new Set(KANJI_SET.split(''))).slice(0, 64);
   const BASE64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-  // 各支部のカラー・表示タイトル・グローエフェクト定義
+  // REPORT（支部別）設定
   const BRANCH_CONFIG = {
-    'NA': { 
-      color: '#00ff66', 
-      glow: 'rgba(0, 255, 102, 0.3)',
-      org: 'UN-SRO NORTH AMERICA DIVISION', 
-      title: 'MIND-TRANSFER RESEARCH PORTAL', 
-      name: 'NORTH AMERICA', 
-      field: 'AI / MIND-TRANSFER' 
+    'NA': { color: '#00ff66', glow: 'rgba(0, 255, 102, 0.3)', org: 'UN-SRO NORTH AMERICA DIVISION', title: 'MIND-TRANSFER RESEARCH PORTAL', name: 'NORTH AMERICA', field: 'AI / MIND-TRANSFER' },
+    'EU': { color: '#bb55ff', glow: 'rgba(187, 85, 255, 0.3)', org: 'UN-SRO EUROPEAN DIVISION', title: 'GENETIC EVOLUTION TERMINAL', name: 'EUROPE', field: 'GENE-MOD / BIO-EVOLUTION' },
+    'ASIA': { color: '#00d9ff', glow: 'rgba(0, 217, 255, 0.3)', org: 'UN-SRO ASIA DIVISION', title: 'DIVINITY & SPACE-WARP LABORATORY', name: 'ASIA', field: 'DIVINITY / SPACE-WARP' },
+    'RU': { color: '#ff3344', glow: 'rgba(255, 51, 68, 0.3)', org: 'UN-SRO RUSSIAN FEDERATION BRANCH', title: 'HEAVY-GRAVITY & PERMAFROST ARCHIVE', name: 'RUSSIA', field: 'HEAVY-GRAVITY / PERMAFROST' },
+    'AR': { color: '#00f0ff', glow: 'rgba(0, 240, 255, 0.3)', org: 'UN-SRO ARCTIC ABYSS STATION', title: 'SUB-ICE HIGH-PRESSURE SYSTEM', name: 'ARCTIC ABYSS', field: 'SUB-ICE DEEP-SEA / HIGH-PRESSURE' },
+    'OC': { color: '#00ffcc', glow: 'rgba(0, 255, 204, 0.3)', org: 'UN-SRO OCEANIA DIVISION', title: 'ANCIENT OCEANIC DATA DECODER', name: 'OCEANIA', field: 'DEEP-SEA / ANCIENT LIFE' },
+    'AF': { color: '#ffaa00', glow: 'rgba(255, 170, 0, 0.3)', org: 'UN-SRO AFRICA DIVISION', title: 'NANOTECH & MATERIAL CONVERTER', name: 'AFRICA', field: 'NANOTECH / MATERIAL TRANS' },
+    'SA': { color: '#ff00ee', glow: 'rgba(255, 0, 238, 0.3)', org: 'UN-SRO SOUTH AMERICA DIVISION', title: 'TELEPATHIC MENTAL NETWORK', name: 'SOUTH AMERICA', field: 'TELEPATHY / MENTAL NET' },
+    'AN': { color: '#3399ff', glow: 'rgba(51, 153, 255, 0.3)', org: 'UN-SRO ANTARCTICA SECTOR', title: 'CRYO-PHYSICS CONTAINMENT SYSTEM', name: 'ANTARCTICA', field: 'CRYO-PHYSICS / SECTOR-LOCK' }
+  };
+
+  // CHAT / DISC UI設定
+  const SPECIAL_CONFIG = {
+    'CHAT': {
+      color: '#ff8800',
+      glow: 'rgba(255, 136, 0, 0.3)',
+      org: 'UN-SRO TEMPORARY COMMUNICATION NETWORK',
+      title: 'COMMUNICATION NODE',
+      badge: '[ CHAT CHANNEL / 24 HOURS ]'
     },
-    'EU': { 
-      color: '#bb55ff', 
-      glow: 'rgba(187, 85, 255, 0.3)',
-      org: 'UN-SRO EUROPEAN DIVISION', 
-      title: 'GENETIC EVOLUTION TERMINAL', 
-      name: 'EUROPE', 
-      field: 'GENE-MOD / BIO-EVOLUTION' 
-    },
-    'ASIA': { 
-      color: '#00d9ff', 
-      glow: 'rgba(0, 217, 255, 0.3)',
-      org: 'UN-SRO ASIA DIVISION', 
-      title: 'DIVINITY & SPACE-WARP LABORATORY', 
-      name: 'ASIA', 
-      field: 'DIVINITY / SPACE-WARP' 
-    },
-    'RU': { 
-      color: '#ff3344', 
-      glow: 'rgba(255, 51, 68, 0.3)',
-      org: 'UN-SRO RUSSIAN FEDERATION BRANCH', 
-      title: 'HEAVY-GRAVITY & PERMAFROST ARCHIVE', 
-      name: 'RUSSIA', 
-      field: 'HEAVY-GRAVITY / PERMAFROST' 
-    },
-    'AR': { 
-      color: '#00f0ff', 
-      glow: 'rgba(0, 240, 255, 0.3)',
-      org: 'UN-SRO ARCTIC ABYSS STATION', 
-      title: 'SUB-ICE HIGH-PRESSURE SYSTEM', 
-      name: 'ARCTIC ABYSS', 
-      field: 'SUB-ICE DEEP-SEA / HIGH-PRESSURE' 
-    },
-    'OC': { 
-      color: '#00ffcc', 
-      glow: 'rgba(0, 255, 204, 0.3)',
-      org: 'UN-SRO OCEANIA DIVISION', 
-      title: 'ANCIENT OCEANIC DATA DECODER', 
-      name: 'OCEANIA', 
-      field: 'DEEP-SEA / ANCIENT LIFE' 
-    },
-    'AF': { 
-      color: '#ffaa00', 
-      glow: 'rgba(255, 170, 0, 0.3)',
-      org: 'UN-SRO AFRICA DIVISION', 
-      title: 'NANOTECH & MATERIAL CONVERTER', 
-      name: 'AFRICA', 
-      field: 'NANOTECH / MATERIAL TRANS' 
-    },
-    'SA': { 
-      color: '#ff00ee', 
-      glow: 'rgba(255, 0, 238, 0.3)',
-      org: 'UN-SRO SOUTH AMERICA DIVISION', 
-      title: 'TELEPATHIC MENTAL NETWORK', 
-      name: 'SOUTH AMERICA', 
-      field: 'TELEPATHY / MENTAL NET' 
-    },
-    'AN': { 
-      color: '#3399ff', 
-      glow: 'rgba(51, 153, 255, 0.3)',
-      org: 'UN-SRO ANTARCTICA SECTOR', 
-      title: 'CRYO-PHYSICS CONTAINMENT SYSTEM', 
-      name: 'ANTARCTICA', 
-      field: 'CRYO-PHYSICS / SECTOR-LOCK' 
+    'DISC': {
+      color: '#00e5a3',
+      glow: 'rgba(0, 229, 163, 0.3)',
+      org: 'UN-SRO DISCUSSION ARCHIVE',
+      title: 'THEORETICAL REVIEW DATABASE',
+      badge: '[ DISCUSSION THREAD / RETENTION 30 DAYS ]'
     }
   };
 
-  // UNSRO-支部コードが打ち込まれた際の判別処理
   function parseProtocolCode() {
     const keyText = document.getElementById('key').value.trim().toUpperCase();
     const root = document.documentElement;
@@ -276,30 +228,35 @@
     const mainTitle = document.getElementById('mainTitle');
     const badge = document.getElementById('branchBadge');
 
-    // 正規表現で "UNSRO-支部コード-番号" を判定
-    const match = keyText.match(/^UNSRO-([A-Z]+)-?(\d*)$/);
-
-    if (match) {
-      const branchCode = match[1];
-      const reportNum = match[2] ? ` / REPORT #${match[2]}` : '';
-
-      if (BRANCH_CONFIG[branchCode]) {
-        const config = BRANCH_CONFIG[branchCode];
-        
-        // 1. 全体背景を真っ黒（ダークモード）へ切り替え
-        document.body.classList.add('secret-mode');
-        
-        // 2. 支部カラーとテキストを変更
-        root.style.setProperty('--accent-color', config.color);
-        root.style.setProperty('--accent-glow', config.glow);
-        orgHeader.innerText = config.org;
-        mainTitle.innerText = config.title;
-        badge.innerText = `[ BRANCH: ${config.name} / ${config.field}${reportNum} ]`;
-        return;
-      }
+    // 1. CHAT 判定
+    if (keyText.startsWith('CHAT-')) {
+      const config = SPECIAL_CONFIG['CHAT'];
+      applyUI(config.color, config.glow, config.org, config.title, config.badge);
+      return;
     }
 
-    // コードを消した・一致しない場合は、通常状態（白背景の疑似画面）に戻す
+    // 2. DISC 判定
+    if (keyText.startsWith('DISC-')) {
+      const config = SPECIAL_CONFIG['DISC'];
+      applyUI(config.color, config.glow, config.org, config.title, config.badge);
+      return;
+    }
+
+    // 3. REPORT (UNSRO-支部-...) 判定
+    const match = keyText.match(/^UNSRO-([A-Z]+)-?/);
+    if (match && BRANCH_CONFIG[match[1]]) {
+      const config = BRANCH_CONFIG[match[1]];
+      applyUI(
+        config.color, 
+        config.glow, 
+        config.org, 
+        config.title, 
+        `[ BRANCH: ${config.name} / ${config.field} ]`
+      );
+      return;
+    }
+
+    // デフォルト（擬態状態）
     document.body.classList.remove('secret-mode');
     root.style.setProperty('--accent-color', '#2b3a4a');
     orgHeader.innerText = 'United Nations Research Repository';
@@ -307,12 +264,14 @@
     badge.innerText = '[ SYSTEM STATUS: READY / DOCUMENT PARSER ]';
   }
 
-  function utf8_to_b64(str) {
-    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (m, p1) => String.fromCharCode('0x' + p1)));
-  }
-
-  function b64_to_utf8(str) {
-    return decodeURIComponent(Array.prototype.map.call(atob(str), c => '%' + ('0' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+  function applyUI(color, glow, org, title, badgeText) {
+    const root = document.documentElement;
+    document.body.classList.add('secret-mode');
+    root.style.setProperty('--accent-color', color);
+    root.style.setProperty('--accent-glow', glow);
+    document.getElementById('orgHeader').innerText = org;
+    document.getElementById('mainTitle').innerText = title;
+    document.getElementById('branchBadge').innerText = badgeText;
   }
 
   function getKeyOffset(key) {
@@ -324,18 +283,60 @@
     return Math.abs(hash);
   }
 
+  // 期限判定および動的オフセットの計算
+  function calculateTimeShift(key) {
+    const uppercaseKey = key.toUpperCase();
+    const now = new Date();
+
+    // CHAT (24時間) 判定
+    if (uppercaseKey.startsWith('CHAT-')) {
+      const parts = uppercaseKey.split('-');
+      const dateStr = parts[parts.length - 1]; // 最終要素 YYYYMMDD
+      if (/^\d{8}$/.test(dateStr)) {
+        const createdDate = parseDateString(dateStr);
+        const diffHours = (now - createdDate) / (1000 * 60 * 60);
+        // 24時間を経過、または未来の日付の場合は暗号を壊す（シフトさせる）
+        if (diffHours < 0 || diffHours >= 24) {
+          return 9999; 
+        }
+      }
+    }
+
+    // DISC (30日) 判定
+    if (uppercaseKey.startsWith('DISC-')) {
+      const parts = uppercaseKey.split('-');
+      const dateStr = parts[parts.length - 1]; // 最終要素 YYYYMMDD
+      if (/^\d{8}$/.test(dateStr)) {
+        const createdDate = parseDateString(dateStr);
+        const diffDays = (now - createdDate) / (1000 * 60 * 60 * 24);
+        // 30日を経過、または未来の日付の場合は暗号を壊す
+        if (diffDays < 0 || diffDays >= 30) {
+          return 8888;
+        }
+      }
+    }
+
+    return 0; // 有効期限内またはREPORT
+  }
+
+  function parseDateString(str) {
+    const y = parseInt(str.substring(0, 4), 10);
+    const m = parseInt(str.substring(4, 6), 10) - 1;
+    const d = parseInt(str.substring(6, 8), 10);
+    return new Date(y, m, d);
+  }
+
   function processCipher(isEncrypt) {
     const input = document.getElementById('inputText').value;
     const key = document.getElementById('key').value || "ASYLUM";
     const output = document.getElementById('outputText');
     
-    if(!input) {
-      alert("テキストを入力してください！");
-      return;
-    }
+    if(!input) return;
 
     let result = "";
-    let rotor = getKeyOffset(key);
+    // 時間差分によるローター破壊オフセットを取得
+    const timeShift = calculateTimeShift(key);
+    let rotor = getKeyOffset(key) + timeShift;
 
     try {
       if (isEncrypt) {
@@ -378,8 +379,26 @@
 
       output.value = result;
     } catch (e) {
-      alert("解析に失敗しました。レポートIDまたは暗号データが一致しません。");
+      // エラーは絶対に表示せず、ランダムな崩れた文字を出力する
+      output.value = generateDummyNoise(input.length);
     }
+  }
+
+  // 失敗時に出力する意味不明なノイズ生成
+  function generateDummyNoise(len) {
+    let noise = "";
+    for(let i = 0; i < len; i++) {
+      noise += KANJI_TABLE[Math.floor(Math.random() * KANJI_TABLE.length)];
+    }
+    return noise;
+  }
+
+  function utf8_to_b64(str) {
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (m, p1) => String.fromCharCode('0x' + p1)));
+  }
+
+  function b64_to_utf8(str) {
+    return decodeURIComponent(Array.prototype.map.call(atob(str), c => '%' + ('0' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
   }
 </script>
 
